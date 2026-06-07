@@ -1,38 +1,52 @@
 # FILE:        netlify.toml
-# VERSION:     3.0
-# DATE:        2026-06-06 @ 22:55 EST
-# CR:          CR003
-# CHANGES:     - Added function naming convention documentation
-#              - Clarified that Netlify resolves functions by filename only;
-#                version tracking lives inside each function file's header
+# VERSION:     5.0
+# DATE:        2026-06-07 @ 00:09 EST
+# CR:          CR005
+# CHANGES:     - Added [[redirects]] rewrite rule: / → /index-v3.html (200)
+#                Netlify serves index.html by default; versioned filenames
+#                require an explicit rewrite so no manual renaming is needed.
+#              - On each new CR, update the `to` value in [[redirects]] to
+#                point to the latest index version (e.g. /index-v4.html)
 # AUTHOR:      Thinkezly / CJ
-# PREV VERSION: netlify.toml v2.0 (CR002)
+# PREV VERSION: netlify.toml v3.0 (CR003)
 #
-# ── FUNCTION NAMING CONVENTION ─────────────────────────────────────────────
-# Netlify Functions are resolved by filename only. There is no native config
-# to alias or redirect individual function names in netlify.toml.
+# ── FRONTEND FILE ROUTING ──────────────────────────────────────────────────
+# Netlify serves "index.html" at the root by default. Since HTML files use
+# versioned filenames (index-v2.html, index-v3.html, etc.), a rewrite rule
+# below maps "/" to the current active version.
 #
-# Rule: The deployed filename must always match the frontend fetch path.
+# TO UPDATE ON EACH NEW CR:
+#   Change the `to` field in [[redirects]] to the new index filename.
+#   Example: to = "/index-v4.html"
+#   Do NOT rename the file itself — the redirect handles it.
+# ──────────────────────────────────────────────────────────────────────────
+#
+# ── FUNCTION NAMING CONVENTION ────────────────────────────────────────────
+# Netlify Functions are resolved by filename only. The deployed filename must
+# always match the frontend fetch path.
 #   Frontend calls:  /.netlify/functions/analyze
-#   Deployed file:   netlify/functions/analyze.js   ← must match, always
+#   Deployed file:   netlify/functions/analyze.js   ← must always be this name
 #
-# Versioning for functions is tracked INSIDE the file header comment block
-# using the VERSIONED and DEPLOYED_AS fields, e.g.:
-#   VERSIONED:   analyze-v3.js
-#   DEPLOYED_AS: analyze.js
-#
-# HTML/CSS/JS assets (non-function files) DO use version suffixes in the
-# filename itself, e.g. index-v3.html, since they are not Netlify-resolved.
-# ───────────────────────────────────────────────────────────────────────────
+# Version tracking for functions lives INSIDE the file header comment block.
+# HTML/CSS/JS assets use version suffixes in the filename itself.
+# ──────────────────────────────────────────────────────────────────────────
 
 [build]
   publish = "."
   functions = "netlify/functions"
 
 [functions]
-  # All functions in netlify/functions/ are auto-detected by filename.
-  # Current active functions:
-  #   analyze.js  → /.netlify/functions/analyze  (versioned: analyze-v3.js, unchanged CR004)
+  # Active functions:
+  #   analyze.js  → /.netlify/functions/analyze  (versioned: analyze-v3.js, unchanged CR005)
+
+# ── ROOT PAGE REWRITE ──────────────────────────────────────────────────────
+# Routes the site root to the current versioned index file.
+# UPDATE `to` HERE ON EACH NEW CR THAT CHANGES THE INDEX FILE.
+# ──────────────────────────────────────────────────────────────────────────
+[[redirects]]
+  from   = "/"
+  to     = "/index-v3.html"
+  status = 200
 
 [[headers]]
   for = "/*"
