@@ -32,7 +32,7 @@
 [functions]
   # All functions in netlify/functions/ are auto-detected by filename.
   # Current active functions:
-  #   analyze.js  → /.netlify/functions/analyze  (versioned: analyze-v3.js)
+  #   analyze.js  → /.netlify/functions/analyze  (versioned: analyze-v3.js, unchanged CR004)
 
 [[headers]]
   for = "/*"
